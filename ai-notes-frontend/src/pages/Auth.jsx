@@ -19,6 +19,8 @@ function LoginForm({ onSwitch }) {
       });
       const data = await res.json();
       if (data.ok) {
+        // 保存用户名到 localStorage
+        localStorage.setItem('aiNotesUsername', username);
         pushToast(data.message || '登录成功', 'success');
         setTimeout(() => navigate('/dashboard'), 700);
       } else {
