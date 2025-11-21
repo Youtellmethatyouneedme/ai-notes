@@ -110,6 +110,15 @@ function RegisterForm({ onSwitch }) {
       pushToast('两次密码输入不一致', 'danger');
       return;
     }
+    if (username.length < 3 || username.length > 150) {
+      pushToast('用户名长度应在3-150个字符之间', 'warning');
+      return;
+    }
+    if (password.length < 4 || password.length > 128) {
+      pushToast('密码长度应在4-128个字符之间', 'warning');
+      return;
+    }
+    
     setLoading(true);
     try {
       const res = await fetch("https://ai-notes-backend-7go6.onrender.com/register", {
@@ -119,12 +128,20 @@ function RegisterForm({ onSwitch }) {
       });
       const data = await res.json();
       if (data.ok) {
-        pushToast(data.message || '注册成功', 'success');
+        pushToast('🎉 注册成功！2秒后自动跳转到登录页面...', 'success');
+        // 2秒后自动跳转到登录页面
+        setTimeout(() => {
+          onSwitch(); // 切换到登录页面
+          // 清空表单
+          setUsername('');
+          setPassword('');
+          setConfirm('');
+        }, 2000);
       } else {
-        pushToast(data.error || '注册失败', 'danger');
+        pushToast(data.error || '注册失败，请重试', 'danger');
       }
     } catch (e) {
-      pushToast('无法连接到后端', 'danger');
+      pushToast('无法连接到服务器，请检查网络', 'danger');
     } finally {
       setLoading(false);
     }
@@ -146,7 +163,7 @@ function RegisterForm({ onSwitch }) {
             </span>
             <input 
               className="form-control border-start-0 ps-0" 
-              placeholder="用户名" 
+              placeholder="用户名（3-150个字符）" 
               value={username} 
               onChange={(e)=>setUsername(e.target.value)} 
             />
@@ -161,7 +178,7 @@ function RegisterForm({ onSwitch }) {
             <input 
               type="password" 
               className="form-control border-start-0 ps-0" 
-              placeholder="密码" 
+              placeholder="密码（4-128个字符）" 
               value={password} 
               onChange={(e)=>setPassword(e.target.value)} 
             />
